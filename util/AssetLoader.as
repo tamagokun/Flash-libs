@@ -1,10 +1,14 @@
-package com.ripeworks.util
+package util
 {
 	import flash.net.URLLoader;
 	import flash.net.URLRequest;
+	import flash.display.DisplayObject;
+	import flash.display.Loader;
+	import flash.display.LoaderInfo;
 	import flash.events.Event;
 	import flash.events.IOErrorEvent;
 	import flash.events.ProgressEvent;
+	import flash.system.ApplicationDomain;
 	import flash.system.LoaderContext;
 	
 	/**
@@ -18,6 +22,8 @@ package com.ripeworks.util
 	 */
 	public class AssetLoader
 	{
+		public static var loaderContext:LoaderContext;
+		public static var url_prefix:String = "";
 		public static var bytesLoaded:Number = 0;
 		public static var bytesTotal:Number = 0;
 		
@@ -30,7 +36,7 @@ package com.ripeworks.util
 		
 		public function AssetLoader():void { }
 		
-		public static function init(relative_to_swf:Boolean = false):void
+		public static function init(base:* = false):void
 		{
 			if( !_inited )
 			{
@@ -40,16 +46,23 @@ package com.ripeworks.util
 				_isLoading = false;
 				_inited = true;
 			}
+			if( base )
+			{
+				if( base is String)
+					url_prefix = base;
+				if( base.hasOwnProperty("loaderInfo") )
+					url_prefix = base.loaderInfo.url.substr(0, base.loaderInfo.url.lastIndexOf("/") + 1);
+			}
 		}
 		
 		public static function load_text(url:String, callback:Function, checkPolicy:Boolean = false):void
 		{
-			queue_asset(url,callback,checkPolicy);
+			queue_asset(url_prefix+url,callback,checkPolicy);
 		}
 		
 		public static function load(url:String, callback:Function, checkPolicy:Boolean = false):void
 		{
-			queue_asset(url,callback,checkPolicy,true);
+			queue_asset(url_prefix+url,callback,checkPolicy,true);
 		}
 		
 		public static function flush_queue(force:Boolean = false):void
@@ -120,7 +133,7 @@ package com.ripeworks.util
 			
 			if( loaderLength < MAX_LOADERS )
 			{
-				var addLoader:URLLoader = (use_loader)? new Loader() : new URLLoader();
+				var addLoader:* = (use_loader)? new Loader() : new URLLoader();
 				_loaders[loaderLength] = addLoader;
 				return addLoader;
 			}
