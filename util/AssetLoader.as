@@ -116,7 +116,10 @@ package util
 				event_target.addEventListener(Event.COMPLETE, loadCompleteHandler);
 				event_target.addEventListener(IOErrorEvent.IO_ERROR, loadErrorHandler);
 				event_target.addEventListener(ProgressEvent.PROGRESS, loadProgressHandler);
-				loader.load(request, loaderContext);
+				if( loader is Loader )
+					loader.load(request, loaderContext);
+				else
+					loader.load(request);
 			}
 		}
 		
