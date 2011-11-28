@@ -52,6 +52,22 @@ package com.ripeworks.util
 			queue_asset(url,callback,checkPolicy,true);
 		}
 		
+		public static function flush_queue(force:Boolean = false):void
+		{
+			var i:int = 0;
+			var loaderLength:int = _loaders.length;
+			for(i;i<loaderLength;i++)
+			{
+				if( force )
+					_loaders[i] = null;
+				else
+				{
+					if(!_loaders[i].hasEventListener(Event.COMPLETE))
+						_loaders[i] = null;
+				}
+			}
+		}
+		
 		private static function queue_asset(url:String,callback:Function,checkPolicy:Boolean = false,useLoader:Boolean = false):void
 		{
 			var hash:Object = {url:url, callback:callback, loading: false, policy: checkPolicy, loader:useLoader};
@@ -68,6 +84,7 @@ package com.ripeworks.util
 			}else
 			{
 				_isLoading = false;
+				flush_queue();
 				return;
 			}
 			
@@ -96,7 +113,8 @@ package com.ripeworks.util
 			var loaderLength:int = _loaders.length;
 			for(i;i<loaderLength;i++)
 			{
-				if( !_loaders[i].hasEventListener(Event.COMPLETE))
+				var type_check:Boolean = (use_loader)? _loaders[i] is Loader : _loaders[i] is URLLoader;
+				if( !_loaders[i].hasEventListener(Event.COMPLETE) && type_check)
 					return _loaders[i];
 			}
 			
