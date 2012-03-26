@@ -3,7 +3,6 @@ package com.ripeworks.Stellar.utils
 	import com.ripeworks.Stellar.model.ModelObject;
 
 	import flash.external.ExternalInterface;
-	import mx.utils.StringUtil;
 	/**
 	 * Parser util to evaluate string based expressions
 	 * 
@@ -89,7 +88,7 @@ package com.ripeworks.Stellar.utils
 			
 			if( model[key] == null)
 				return false;
-			switch( StringUtil.trim(operator) )
+			switch( operator.replace(/^\s+|\s+$/g, "") )
 			{
 				case "=":
 					if( model[key] == value)
